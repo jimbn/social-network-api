@@ -67,4 +67,12 @@ module.exports = {
             res.json(error);
         }
     },
+
+    addFriend: async (req, res) => {
+
+    },
+
+    deleteFriend: async (req, res) => {
+
+    },
 };
