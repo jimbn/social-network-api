@@ -2,20 +2,7 @@ const res = require('express/lib/response');
 const { Thought, User } = require('../models');
 
 module.exports = {
-    createThought: async (req, res) => {
-        const { thoughtText } = req.body;
-
-        try {
-            const createThought = await Thought.create({
-                task,
-                username: '',
-            });
-        } catch (error) {
-            res.json(error);
-        }
-    },
-
-    getAllThoughts: async (req, res) => {
+       getAllThoughts: async (req, res) => {
         try {
             const thoughts = await Thought.find({
                 username: '',
@@ -33,6 +20,19 @@ module.exports = {
         try {
             const thought = await User.findById(req.params.id);
             res.json(thought);
+        } catch (error) {
+            res.json(error);
+        }
+    },
+
+    createThought: async (req, res) => {
+        const { thoughtText } = req.body;
+
+        try {
+            const createThought = await Thought.create({
+                task,
+                username: '',
+            });
         } catch (error) {
             res.json(error);
         }

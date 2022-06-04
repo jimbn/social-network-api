@@ -1,78 +1,98 @@
 const { User } = require('../models');
 
 module.exports = {
-    createUser: async (req,res) => {
-        const {
-            username,
-            email,
-        } = req.body;
-
-        try {
-            const newUser = await User.create({
-                username,
-                email,
-            });
-            res.json(newUser);
-        } catch (error) {
-            res.json(error);
-        }
-    },
-
     getAllUser: async (req,res) => {
-        try {
-            const users = await User.find();
-            res.json(users);
-        } catch (error) {
-            res.json(error);
-        }
+        User.find()
+        .select('-__v')
+        .then((users) => {
+          res.json(users);
+        })
+        .catch((e) => {
+          res.json(e);
+        });
     },
 
     getUserById: async (req,res) => {
-        try {
-            const user = await User.findById(req.params.id);
-            res.json(user);
-        } catch (error) {
-            res.json(error);
-        }
+        User.findById(req.params.userId )
+        .select('-__v')
+        .populate('friends')
+        .populate('thoughts')
+        .then((user) => {
+          if (!user) {
+            return res.json({ message: 'No user with this id!' });
+          }
+          res.json(user);
+        })
+        .catch((e) => {
+          console.log(e);
+          res.json(e);
+        });
+    },
+
+    createUser: async (req,res) => {
+        User.create(req.body)
+        .then((user) => {
+          res.json(user);
+        })
+        .catch((e) => {
+          console.log(e);
+          res.json(e);
+        });
     },
 
     updateUserById: async (req,res) => {
-        const{
-            username,
-            email,
-        } = req.body;
-        try {
-            const updateUser = await User.findByIdAndUpdate(
-                req.params.id,
-                {
-                    username,
-                    email,
-                },
-                {
-                    new: true,
-                }
-            );
-
-            res.json(updateUser)
-        } catch (error) {
-            res.json(error);
-        }
+        User.findByIdandUpdate(req.params.userId, {$set: req.body,}, {  new: true, runValidators: true, })
+            .then((user) => {
+              if (!user) {
+                return res.json({ message: 'No user with this id!' });
+              }
+              res.json(user);
+            })
+            .catch((e) => {
+              console.log(e);
+              res.json(e);
+            });
     },
 
     deleteUserById: async (req,res) => {
-        try {
-            const deleteUser = await User.findByIdAndDelete(req.params.id);
-            res.json(deleteUser);
-        } catch (error) {
-            res.json(error);
-        }
+        User.findByIdAndDelete(req.params.userId)
+        .then((user) => {
+          if (!user) {
+            return res.json({ message: 'No user with this id!' });
+          }
+          return Thought.deleteMany({ _id: { $in: user.thoughts } });
+        })
+        .catch((e) => {
+          console.log(e);
+          res.json(e);
+        });
     },
 
     addFriend: async (req, res) => {
-
+        User.findOneAndUpdate(req.params.userId , { $addToSet: { friends: req.params.friendId } }, { new: true })
+        .then((user) => {
+          if (!user) {
+            return res.status(404).json({ message: 'No user with this id!' });
+          }
+          res.json(user);
+        })
+        .catch((e) => {
+          console.log(e);
+          res.json(e);
+        });
     },
 
     deleteFriend: async (req, res) => {
-
+    User.findOneAndUpdate(req.params.userId , { $pull: { friends: req.params.friendId } }, { new: true })
+      .then((user) => {
+        if (!user) {
+          return res.status(404).json({ message: 'No user with this id!' });
+        }
+        res.json(user);
+      })
+      .catch((e) => {
+        console.log(e);
+        res.json(e);
+      });
     },
 };
