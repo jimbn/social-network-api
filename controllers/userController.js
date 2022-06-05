@@ -19,12 +19,11 @@ module.exports = {
         .populate('thoughts')
         .then((user) => {
           if (!user) {
-            return res.json({ message: 'No user with this id!' });
+            return res.json({ message: 'No user found with this id!' });
           }
           res.json(user);
         })
         .catch((e) => {
-          console.log(e);
           res.json(e);
         });
     },
@@ -35,21 +34,19 @@ module.exports = {
           res.json(user);
         })
         .catch((e) => {
-          console.log(e);
           res.json(e);
         });
     },
 
     updateUserById: async (req,res) => {
-        User.findByIdandUpdate(req.params.userId, {$set: req.body,}, {  new: true, runValidators: true, })
+        User.findByIdAndUpdate(req.params.userId, {$set: req.body,}, {  new: true, runValidators: true, })
             .then((user) => {
               if (!user) {
-                return res.json({ message: 'No user with this id!' });
+                return res.json({ message: 'No user found with this id!' });
               }
               res.json(user);
             })
             .catch((e) => {
-              console.log(e);
               res.json(e);
             });
     },
@@ -58,12 +55,11 @@ module.exports = {
         User.findByIdAndDelete(req.params.userId)
         .then((user) => {
           if (!user) {
-            return res.json({ message: 'No user with this id!' });
+            return res.json({ message: 'No user found with this id!' });
           }
           return Thought.deleteMany({ _id: { $in: user.thoughts } });
         })
         .catch((e) => {
-          console.log(e);
           res.json(e);
         });
     },
@@ -72,12 +68,11 @@ module.exports = {
         User.findOneAndUpdate(req.params.userId , { $addToSet: { friends: req.params.friendId } }, { new: true })
         .then((user) => {
           if (!user) {
-            return res.status(404).json({ message: 'No user with this id!' });
+            return res.status(404).json({ message: 'No user found with this id!' });
           }
           res.json(user);
         })
         .catch((e) => {
-          console.log(e);
           res.json(e);
         });
     },
@@ -86,12 +81,11 @@ module.exports = {
     User.findOneAndUpdate(req.params.userId , { $pull: { friends: req.params.friendId } }, { new: true })
       .then((user) => {
         if (!user) {
-          return res.status(404).json({ message: 'No user with this id!' });
+          return res.status(404).json({ message: 'No user found with this id!' });
         }
         res.json(user);
       })
       .catch((e) => {
-        console.log(e);
         res.json(e);
       });
     },
