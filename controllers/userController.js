@@ -1,7 +1,7 @@
 const { User } = require('../models');
 
 module.exports = {
-    getAllUser: async (req,res) => {
+    getAllUser: (req,res) => {
         User.find()
         .select('-__v')
         .then((users) => {
@@ -12,7 +12,7 @@ module.exports = {
         });
     },
 
-    getUserById: async (req,res) => {
+    getUserById: (req,res) => {
         User.findById(req.params.userId )
         .select('-__v')
         .populate('friends')
@@ -28,7 +28,7 @@ module.exports = {
         });
     },
 
-    createUser: async (req,res) => {
+    createUser: (req,res) => {
         User.create(req.body)
         .then((user) => {
           res.json(user);
@@ -38,7 +38,7 @@ module.exports = {
         });
     },
 
-    updateUserById: async (req,res) => {
+    updateUserById: (req,res) => {
         User.findByIdAndUpdate(req.params.userId, {$set: req.body,}, {  new: true, runValidators: true, })
             .then((user) => {
               if (!user) {
@@ -51,7 +51,7 @@ module.exports = {
             });
     },
 
-    deleteUserById: async (req,res) => {
+    deleteUserById: (req,res) => {
         User.findByIdAndDelete(req.params.userId)
         .then((user) => {
           if (!user) {
@@ -64,7 +64,7 @@ module.exports = {
         });
     },
 
-    addFriend: async (req, res) => {
+    addFriend: (req, res) => {
         User.findOneAndUpdate(req.params.userId , { $addToSet: { friends: req.params.friendId } }, { new: true })
         .then((user) => {
           if (!user) {
@@ -77,7 +77,7 @@ module.exports = {
         });
     },
 
-    deleteFriend: async (req, res) => {
+    deleteFriend: (req, res) => {
     User.findOneAndUpdate(req.params.userId , { $pull: { friends: req.params.friendId } }, { new: true })
       .then((user) => {
         if (!user) {

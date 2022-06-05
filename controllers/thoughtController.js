@@ -1,7 +1,7 @@
 const { Thought, User } = require('../models');
 
 module.exports = {
-       getAllThoughts: async (req, res) => {
+       getAllThoughts: (req, res) => {
         Thought.find()
         .sort({ createdAt: -1 })
         .then((thoughts) => {
@@ -12,7 +12,7 @@ module.exports = {
         });
     },
 
-    getThoughtsById: async (req, res) => {
+    getThoughtsById: (req, res) => {
         Thought.findById(req.params.thoughtId)
         .then((thought) => {
           if (!thought) {
@@ -27,7 +27,7 @@ module.exports = {
 
   
 
-    createThought: async (req, res) => {
+    createThought: (req, res) => {
         Thought.create(req.body)
         .then((thought) => {
           return User.findByIdAndUpdate(req.body.userId, 
@@ -46,7 +46,7 @@ module.exports = {
         });
     },
 
-    updateThoughtById: async (req, res) => {
+    updateThoughtById: (req, res) => {
         Thought.findByIdAndUpdate(req.params.thoughtId, { $set: req.body }, { runValidators: true, new: true })
         .then((thought) => {
           if (!thought) {
@@ -59,7 +59,7 @@ module.exports = {
         });
     },
 
-    deleteThoughtById: async (req, res) => {
+    deleteThoughtById: (req, res) => {
         Thought.findByIdAndDelete(req.params.thoughtId )
         .then((thought) => {
           if (!thought) {
@@ -82,12 +82,38 @@ module.exports = {
         });
     },
 
-    addReaction: async ({ params, body }, res) => {
-
+    addReaction: (req, res) => {
+        Thought.findByIdAndUpdate(
+            req.params.thoughtId,
+            { $addToSet: { reactions: req.body } },
+            { runValidators: true, new: true }
+          )
+            .then((thought) => {
+              if (!thought) {
+                return res.json({ message: 'No thought found with this id!' });
+              }
+              res.json(thought);
+            })
+            .catch((e) => {
+              res.json(e);
+            });
     },
 
-    deleteReactionById: async ({ params}, res) => {
-
+    deleteReactionById: (req, res) => {
+        Thought.findByIdAndUpdate(
+            req.params.thoughtId,
+            { $pull: { reactions: { reactionId: req.params.reactionId } } },
+            { runValidators: true, new: true }
+        )
+        .then((thought) => {
+            if (!thought) {
+                return res.json({ message: 'No thought found with this id!' });
+            }
+                res.json(thought);
+            })
+        .catch((e) => {
+            res.json(e);
+        }); 
     },
-
+    
 };
