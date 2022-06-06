@@ -43,13 +43,11 @@ const ThoughtSchema = new Schema({
     username: {
         type: String,
         required: true,
-        ref:'User',
     },
     reactions: [ ReactionSchema ],
 },
 {
     toJson: {
-        virtuals: true,
         getters: true,
     },
     id: false,

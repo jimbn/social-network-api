@@ -1,6 +1,6 @@
 const { User } = require('../models');
 
-module.exports = {
+const userController = {
     getAllUser: (req,res) => {
         User.find()
         .select('-__v')
@@ -8,6 +8,8 @@ module.exports = {
           res.json(users);
         })
         .catch((e) => {
+          console.log(err);
+
           res.json(e);
         });
     },
@@ -28,7 +30,7 @@ module.exports = {
         });
     },
 
-    createUser: (req,res) => {
+    createUser(req,res) {
         User.create(req.body)
         .then((user) => {
           res.json(user);
@@ -65,7 +67,7 @@ module.exports = {
     },
 
     addFriend: (req, res) => {
-        User.findOneAndUpdate(req.params.userId , { $addToSet: { friends: req.params.friendId } }, { new: true })
+        User.findByIdAndUpdate(req.params.userId , { $addToSet: { friends: req.params.friendId } }, { new: true })
         .then((user) => {
           if (!user) {
             return res.status(404).json({ message: 'No user found with this id!' });
@@ -78,7 +80,7 @@ module.exports = {
     },
 
     deleteFriend: (req, res) => {
-    User.findOneAndUpdate(req.params.userId , { $pull: { friends: req.params.friendId } }, { new: true })
+    User.findByIdAndUpdate(req.params.userId , { $pull: { friends: req.params.friendId } }, { new: true })
       .then((user) => {
         if (!user) {
           return res.status(404).json({ message: 'No user found with this id!' });
@@ -90,3 +92,5 @@ module.exports = {
       });
     },
 };
+
+module.exports = userController;

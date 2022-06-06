@@ -115,5 +115,5 @@ module.exports = {
             res.json(e);
         }); 
     },
-    
+
 };
